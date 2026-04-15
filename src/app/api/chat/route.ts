@@ -1,4 +1,6 @@
 import { OpenRouter } from "@openrouter/sdk";
+import { getSystemPrompt } from "./prompt";
+import { getProjectDetailFromMessage } from "./projectDetails";
 
 const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY!,
@@ -12,15 +14,35 @@ export async function POST(req: Request) {
       return new Response("Missing message", { status: 400 });
     }
 
-    const systemPrompt = `You are Sid Khanna's portfolio assistant. Answer questions about Sid's background, projects, and experience clearly and naturally.`;
+    const systemMessage = {
+      role: "system" as const,
+      content: getSystemPrompt(),
+    };
+
+    const matchedProject = getProjectDetailFromMessage(message);
+
+    const projectContextMessage = matchedProject
+      ? {
+          role: "system" as const,
+          content: `Relevant project context:\n\n${matchedProject}`,
+        }
+      : null;
+
+    const messages = projectContextMessage
+      ? [
+          systemMessage,
+          projectContextMessage,
+          { role: "user" as const, content: message },
+        ]
+      : [
+          systemMessage,
+          { role: "user" as const, content: message },
+        ];
 
     const stream = await openrouter.chat.send({
       chatRequest: {
         model: "nvidia/nemotron-3-super-120b-a12b:free",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message },
-        ],
+        messages,
         stream: true,
       },
     });
