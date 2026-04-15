@@ -1,10 +1,20 @@
 import { OpenRouter } from "@openrouter/sdk";
-import { getSystemPrompt } from "./prompt";
-import { getProjectDetailFromMessage } from "./projectDetails";
+import getSystemPrompt from "./prompt";
+import { projectDetails } from "./projectDetails";
 
 const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY!,
 });
+
+function getProjectDetailFromMessage(message: string) {
+  const lowerMessage = message.toLowerCase();
+
+  const matchedProject = projectDetails.find((project) =>
+    project.aliases.some((alias) => lowerMessage.includes(alias.toLowerCase()))
+  );
+
+  return matchedProject?.content ?? null;
+}
 
 export async function POST(req: Request) {
   try {
