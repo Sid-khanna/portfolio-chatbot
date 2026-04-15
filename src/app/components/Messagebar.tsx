@@ -6,38 +6,93 @@ import type { Message } from './MessageContext';
 
 export default function Messagebar() {
   const [input, setInput] = useState('');
-  const { messages, setMessages } = useMessage();
+  const { setMessages } = useMessage();
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
 
-    const newMessage: Message = { role: 'user', content: input };
-    setMessages([...messages, newMessage]);
+    const userMessage: Message = {
+      role: 'user',
+      content: trimmedInput,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: input }),
-    });
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: trimmedInput }),
+      });
 
-    if (!res.body) {
-      console.error('No response body');
-      return;
-    }
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Chat request failed:', errorText);
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let fullText = '';
-    let assistantMessage: Message = { role: 'assistant', content: '' };
-    setMessages((prev) => [...prev, assistantMessage]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'sorry, something went wrong. please try again.',
+          },
+        ]);
+        return;
+      }
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-      fullText += chunk;
-      assistantMessage.content = fullText;
-      setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
+      if (!res.body) {
+        console.error('No response body');
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'sorry, no response came back from the server.',
+          },
+        ]);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let fullText = '';
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+
+        setMessages((prev) => [
+          ...prev.slice(0, -1),
+          { role: 'assistant', content: fullText },
+        ]);
+      }
+
+      if (!fullText.trim()) {
+        setMessages((prev) => [
+          ...prev.slice(0, -1),
+          {
+            role: 'assistant',
+            content: 'sorry, i did not get a usable response.',
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error('sendMessage error:', error);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'sorry, something broke while sending your message.',
+        },
+      ]);
     }
   };
 
@@ -47,7 +102,11 @@ export default function Messagebar() {
         className="flex-1 p-2 rounded bg-[#2a2a2a] text-white placeholder-gray-400"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            sendMessage();
+          }
+        }}
         placeholder="ask me anything..."
       />
       <button

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^15.3.2",
+    "@openrouter/sdk": "^0.12.7",
     "@vercel/analytics": "^1.5.0",
     "ai": "^4.3.16",
     "framer-motion": "^12.12.1",
