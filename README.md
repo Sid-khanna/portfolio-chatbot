@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio Chatbot
 
-## Getting Started
+An AI-powered chatbot integrated into my personal portfolio that allows users to explore my projects, experience, and skills through natural conversation.
 
-First, run the development server:
+👉 **Live Demo:** https://sid-portfolio-chat.vercel.app/  
+👉 **Repository:** https://github.com/Sid-khanna/portfolio-chatbot
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Overview
+
+This project is a conversational interface for my portfolio. Instead of navigating static sections, users can simply ask questions like:
+
+- "tell me about your projects"
+- "what experience do you have with AI?"
+- "what did you do at Mold Masters?"
+
+and receive structured, contextual responses.
+
+The goal was to move beyond a traditional portfolio and build something interactive that better represents how I think, communicate, and approach problem solving.
+
+---
+
+## Features
+
+- Conversational UI for exploring portfolio content
+- Context-aware responses based on user queries
+- Project-specific response matching
+- Clean, responsive frontend using modern web tools
+- Real-time LLM responses via API
+- Modular system for extending project knowledge
+
+---
+
+## Tech Stack
+
+**Frontend**
+- Next.js
+- TypeScript
+- Tailwind CSS
+
+**Backend / AI**
+- OpenRouter API (LLM access)
+- Custom prompt engineering
+- Dynamic context injection
+
+**Deployment**
+- Vercel
+
+---
+
+## How It Works
+
+1. User submits a message through the chat interface  
+2. The system analyzes the message to detect relevant project context  
+3. A system prompt + optional project-specific context is constructed  
+4. The request is sent to the LLM via OpenRouter  
+5. The response is streamed back and displayed in the UI  
+
+This allows the chatbot to give more relevant and grounded answers instead of generic responses.
+
+---
+
+## Project Structure
+
+```
+/app
+  /api/chat/route.ts        # API route handling chat requests
+
+/lib
+  prompt.ts                 # System prompt definition
+  projectDetails.ts         # Project matching + context injection
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Example Use Cases
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Recruiters exploring experience quickly  
+- Demonstrating projects in an interactive way  
+- Showcasing applied AI + full-stack integration  
+- Replacing static portfolio sections with dynamic Q&A  
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Future Improvements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Add memory for multi-turn conversations  
+- Improve project matching with embeddings  
+- Integrate structured knowledge base (Graph / RAG)  
+- Add analytics for user queries  
+- Support richer UI responses (cards, links, visuals)  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Running Locally
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone the repository:
+```bash
+git clone https://github.com/Sid-khanna/portfolio-chatbot.git
+cd portfolio-chatbot
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Add environment variables:
+```env
+OPENROUTER_API_KEY=your_api_key_here
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+---
+
+## Why I Built This
+
+Most portfolios are static and don’t reflect how someone actually thinks or communicates.
+
+I built this to:
+- make my portfolio interactive
+- show how I approach systems and problem solving
+- demonstrate real-world use of LLMs in a product setting
+
+---
+
+## Author
+
+Siddharth Khanna  
+Automation Developer | Robotics | AI Systems  
